@@ -1,25 +1,8 @@
-# PKI : projet de formation (RNCP37680)
+# PKI
 
-Mise en place d'une PKI OpenSSL pour un homelab : CA racine hors ligne, CA intermédiaire,
-certificats serveur/client, mTLS et révocation (CRL/OCSP).
+PKI OpenSSL pour un homelab : CA racine, CA intermédiaire, mTLS et révocation (projet de formation RNCP37680).
 
-## Organisation du dépôt
+- [`pki-infra/`](pki-infra/) : scripts, configs, rapport et CP/CPS
+- [`livrables/`](livrables/) : diaporama et réponses au QCM
 
-| Dossier | Contenu |
-|---|---|
-| [`pki-infra/`](pki-infra/) | Le projet technique : scripts, configurations OpenSSL, config nginx |
-| [`pki-infra/docs/`](pki-infra/docs/) | Rapport technique ([`rapport.md`](pki-infra/docs/rapport.md)) et politique de certification ([`CP-CPS.md`](pki-infra/docs/CP-CPS.md)) |
-| [`livrables/`](livrables/) | Diaporama de présentation et réponses au QCM (PDF) |
-
-## Démarrer
-
-Le mode d'emploi complet est dans [`pki-infra/README.md`](pki-infra/README.md). Test express (bash + OpenSSL ≥ 3.0) :
-
-```bash
-cd pki-infra
-bash scripts/99-demo-test.sh
-```
-
-## Sécurité
-
-Aucune clé privée, `.p12`, CSR ni base de CA n'est versionnée (voir `pki-infra/.gitignore`).
+Test express : `cd pki-infra && bash scripts/99-demo-test.sh` (détails dans [`pki-infra/README.md`](pki-infra/README.md)).
