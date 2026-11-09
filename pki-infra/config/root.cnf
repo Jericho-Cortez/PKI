@@ -1,0 +1,56 @@
+# =====================================================================
+#  root.cnf : CA racine (HORS LIGNE)
+#  Utilisée uniquement lors de "cérémonies" : signature de la CA
+#  intermédiaire et publication de la CRL racine.
+#  Les chemins sont relatifs au dossier courant (voir scripts/lib.sh).
+# =====================================================================
+
+[ ca ]
+default_ca = CA_root
+
+[ CA_root ]
+dir              = $ENV::PKI_DIR/root-ca
+certs            = $dir/certs
+new_certs_dir    = $dir/newcerts
+database         = $dir/index.txt
+serial           = $dir/serial
+crlnumber        = $dir/crlnumber
+certificate      = $dir/certs/root.crt
+private_key      = $dir/private/root.key
+crl              = $dir/crl/root.crl
+default_md       = sha384
+default_days     = 1825          # 5 ans : durée de vie de l'intermédiaire
+default_crl_days = 365           # CRL racine renouvelée à chaque cérémonie
+policy           = policy_match
+unique_subject   = no
+copy_extensions  = none
+
+[ policy_match ]
+organizationName = match
+commonName       = supplied
+
+# --- Génération de la CSR / du certificat auto-signé de la racine ----
+[ req ]
+default_md         = sha384
+prompt             = no
+utf8               = yes
+distinguished_name = dn_root
+x509_extensions    = v3_ca
+
+[ dn_root ]
+O  = Homelab PKI
+CN = Homelab Root CA
+
+# --- Profils d'extensions X.509 (RFC 5280) ---------------------------
+[ v3_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+basicConstraints       = critical, CA:TRUE
+keyUsage               = critical, keyCertSign, cRLSign
+
+[ v3_intermediate_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical, CA:TRUE, pathlen:0
+keyUsage               = critical, keyCertSign, cRLSign
+crlDistributionPoints  = URI:http://pki.home.arpa/root.crl

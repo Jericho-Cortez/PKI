@@ -1,0 +1,10 @@
+# JAMAIS de matériel secret dans le dépôt (cf. QCM Q18 du sujet)
+pki-data/
+pki-test/
+*.key
+*.p12
+*.pfx
+*.csr
+index.txt*
+serial*
+crlnumber*

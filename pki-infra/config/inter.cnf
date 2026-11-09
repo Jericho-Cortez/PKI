@@ -1,0 +1,68 @@
+# =====================================================================
+#  inter.cnf : CA intermédiaire (EN LIGNE, émet les certificats finaux)
+#  Chemins relatifs au dossier courant (voir scripts/lib.sh).
+# =====================================================================
+
+[ ca ]
+default_ca = CA_inter
+
+[ CA_inter ]
+dir              = $ENV::PKI_DIR/inter-ca
+certs            = $dir/certs
+new_certs_dir    = $dir/newcerts
+database         = $dir/index.txt
+serial           = $dir/serial
+crlnumber        = $dir/crlnumber
+certificate      = $dir/certs/inter.crt
+private_key      = $dir/private/inter.key
+crl              = $dir/crl/inter.crl
+default_md       = sha256
+default_days     = 180           # < 200 j : aligné sur le TLS public
+default_crl_days = 30
+policy           = policy_match
+unique_subject   = no
+copy_extensions  = none
+
+[ policy_match ]
+organizationName = match
+commonName       = supplied
+
+# --- CSR de l'intermédiaire elle-même / CSR des certificats finaux ---
+# (pour les certificats finaux, le DN est surchargé par -subj)
+[ req ]
+default_md         = sha384
+prompt             = no
+utf8               = yes
+distinguished_name = dn_inter
+
+[ dn_inter ]
+O  = Homelab PKI
+CN = Homelab Intermediate CA
+
+# --- Profils des certificats finaux ----------------------------------
+[ server_cert ]
+basicConstraints       = CA:FALSE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage               = critical, digitalSignature
+extendedKeyUsage       = serverAuth
+# SAN passé par variable d'environnement, ex. SAN="DNS:app.home.arpa"
+subjectAltName         = $ENV::SAN
+crlDistributionPoints  = URI:http://pki.home.arpa/inter.crl
+authorityInfoAccess    = OCSP;URI:http://pki.home.arpa:2560
+
+[ client_cert ]
+basicConstraints       = CA:FALSE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage               = critical, digitalSignature
+extendedKeyUsage       = clientAuth
+crlDistributionPoints  = URI:http://pki.home.arpa/inter.crl
+authorityInfoAccess    = OCSP;URI:http://pki.home.arpa:2560
+
+[ ocsp_cert ]
+basicConstraints       = CA:FALSE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage               = critical, digitalSignature
+extendedKeyUsage       = critical, OCSPSigning
